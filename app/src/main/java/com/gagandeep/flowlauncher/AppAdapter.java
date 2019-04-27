@@ -16,10 +16,12 @@ public class AppAdapter extends BaseAdapter {
 
     Context context;
     List<AppObject> appList;
+    int cellHeight;
 
-    public AppAdapter(Context context, List<AppObject> appList) {
+    public AppAdapter(Context context, List<AppObject> appList, int cellHeight) {
         this.context = context;
         this.appList = appList;
+        this.cellHeight = cellHeight;
     }
 
     @Override
@@ -50,6 +52,9 @@ public class AppAdapter extends BaseAdapter {
         ImageView mImage = v.findViewById(R.id.image);
         TextView mTextLabel = v.findViewById(R.id.appLabel);
         LinearLayout mLayout = v.findViewById(R.id.layout);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, cellHeight);
+        mLayout.setLayoutParams(layoutParams);
 
         mImage.setImageDrawable(appList.get(position).getImage());
         mTextLabel.setText(appList.get(position).getName());
