@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.GridView;
@@ -16,13 +17,28 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     List<AppObject> appList, installedApplist;
+    ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initializeHome();
         initializeDrawer();
+    }
+
+    private void initializeHome() {
+        ArrayList<PagerObject> pagerAppList = new ArrayList<>();
+        ArrayList<AppObject> appList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            appList.add(new AppObject("", "", getResources().getDrawable(R.drawable.ic_launcher_foreground)));
+        }
+        pagerAppList.add(new PagerObject(appList));
+        pagerAppList.add(new PagerObject(appList));
+        pagerAppList.add(new PagerObject(appList));
+        mViewPager = findViewById(R.id.viewPager);
+        mViewPager.setAdapter(new ViewPagerAdapter(this, pagerAppList));
     }
 
     private void initializeDrawer() {
