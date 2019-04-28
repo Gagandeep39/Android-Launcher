@@ -14,6 +14,7 @@ class ViewPagerAdapter extends PagerAdapter {
     Context context;
     ArrayList<PagerObject> pagerAppList;
     int cellHeight;
+    ArrayList<AppAdapter> appAdapterList = new ArrayList<>();
 
     public ViewPagerAdapter(Context context, ArrayList<PagerObject> pagerAppList, int cellHeight) {
         this.context = context;
@@ -27,7 +28,10 @@ class ViewPagerAdapter extends PagerAdapter {
         LayoutInflater inflater = LayoutInflater.from(context);
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.pager_layout, container, false);
         final GridView mGridView = layout.findViewById(R.id.drawerGrid);
-        mGridView.setAdapter(new AppAdapter(context, pagerAppList.get(position).getAppList(), cellHeight));
+
+
+        AppAdapter mGridAdapter = new AppAdapter(context, pagerAppList.get(position).getAppList(), cellHeight);
+        mGridView.setAdapter(mGridAdapter);
 
 
         container.addView(layout);
@@ -47,5 +51,10 @@ class ViewPagerAdapter extends PagerAdapter {
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
         return view == o;
+    }
+
+    public void notifyGridChange() {
+        for (int i = 0; i < appAdapterList.size(); i++)
+            appAdapterList.get(i).notifyDataSetChanged();
     }
 }

@@ -1,5 +1,6 @@
 package com.gagandeep.flowlauncher;
 
+
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Point;
@@ -22,7 +23,10 @@ public class MainActivity extends AppCompatActivity {
     ViewPager mViewPager;
     int cellHeight;
     int ROW_COUNT = 5;
-    int DRAWER_PEEK_HEIGHT = 100;
+    int DRAWER_PEEK_HEIGHT = 200;
+    GridView mDrawerGridView;
+    BottomSheetBehavior mBottomSheetBehaviour;
+    AppObject mAppDrag = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +38,13 @@ public class MainActivity extends AppCompatActivity {
         initializeDrawer();
     }
 
+    ViewPagerAdapter mViewPagerAdapter;
+
     private void initializeHome() {
         ArrayList<PagerObject> pagerAppList = new ArrayList<>();
         ArrayList<AppObject> appList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            appList.add(new AppObject("", "", getResources().getDrawable(R.drawable.ic_launcher_foreground)));
+            appList.add(new AppObject("", "", getResources().getDrawable(R.drawable.aryn_wallpaper)));
         }
         pagerAppList.add(new PagerObject(appList));
         pagerAppList.add(new PagerObject(appList));
@@ -46,7 +52,9 @@ public class MainActivity extends AppCompatActivity {
         cellHeight = (getDisplayContentHeight() - DRAWER_PEEK_HEIGHT) / ROW_COUNT;
 
         mViewPager = findViewById(R.id.viewPager);
-        mViewPager.setAdapter(new ViewPagerAdapter(this, pagerAppList, cellHeight));
+        mViewPagerAdapter = new ViewPagerAdapter(this, pagerAppList, cellHeight);
+
+        mViewPager.setAdapter(mViewPagerAdapter);
     }
 
     private int getDisplayContentHeight() {
@@ -69,19 +77,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeDrawer() {
         View mBottomSheet = findViewById(R.id.bottomSheet);
-        final GridView mDrawerGridView = findViewById(R.id.drawerGrid);
-        final BottomSheetBehavior mBottomSheetBehaviour = BottomSheetBehavior.from(mBottomSheet);
+        mDrawerGridView = findViewById(R.id.drawerGrid);
+        mBottomSheetBehaviour = BottomSheetBehavior.from(mBottomSheet);
         mBottomSheetBehaviour.setHideable(false);
-        mBottomSheetBehaviour.setPeekHeight(200);
+        mBottomSheetBehaviour.setPeekHeight(DRAWER_PEEK_HEIGHT);
         installedApplist = getInstalledAppList();
         appList = new ArrayList<>();
-        mDrawerGridView.setAdapter(new AppAdapter(getApplicationContext(), installedApplist, cellHeight));
+        mDrawerGridView.setAdapter(new AppAdapter(MainActivity.this, installedApplist, cellHeight));
 
         mBottomSheetBehaviour.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View view, int i) {
-                if (i == BottomSheetBehavior.STATE_HIDDEN && mDrawerGridView.getChildAt(0).getY() != 0)
-                    mBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_EXPANDED);
+                if (i == BottomSheetBehavior.STATE_COLLAPSED && mDrawerGridView.getChildAt(0).getY() != 0)
+                    mBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
                 if (i == BottomSheetBehavior.STATE_DRAGGING && mDrawerGridView.getChildAt(0).getY() != 0)
                     mBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -109,5 +117,30 @@ public class MainActivity extends AppCompatActivity {
                 list.add(appObject);
         }
         return list;
+    }
+
+
+    public void itemPress(AppObject app) {
+        if (mAppDrag != null) {
+            app.setPackageName(mAppDrag.getPackageName());
+            app.setName(mAppDrag.getName());
+            app.setImage(mAppDrag.getImage());
+            mAppDrag = null;
+            mViewPagerAdapter.notifyGridChange();
+        } else {
+            Intent launcherAppIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(app.getPackageName());
+            if (launcherAppIntent != null)
+                getApplicationContext().startActivity(launcherAppIntent);
+        }
+    }
+
+    public void itemLongPress(AppObject appObject) {
+        collapseDrawer();
+        mAppDrag = appObject;
+    }
+
+    public void collapseDrawer() {
+        mDrawerGridView.setY(DRAWER_PEEK_HEIGHT);
+        mBottomSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 }

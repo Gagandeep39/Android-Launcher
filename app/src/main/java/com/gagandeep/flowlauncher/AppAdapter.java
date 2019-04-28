@@ -1,7 +1,6 @@
 package com.gagandeep.flowlauncher;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +39,7 @@ public class AppAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, ViewGroup parent) {
         View v;
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -61,9 +60,14 @@ public class AppAdapter extends BaseAdapter {
         mLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent launchAppIntent = context.getPackageManager().getLaunchIntentForPackage(appList.get(position).getPackageName());
-                if (launchAppIntent != null)
-                    context.startActivity(launchAppIntent);
+                ((MainActivity) context).itemPress(appList.get(position));
+            }
+        });
+        mLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                ((MainActivity) context).itemLongPress(appList.get(position));
+                return true;
             }
         });
         return v;
