@@ -12,7 +12,6 @@ import android.widget.TextView;
 import java.util.List;
 
 public class AppAdapter extends BaseAdapter {
-
     Context context;
     List<AppObject> appList;
     int cellHeight;
@@ -22,7 +21,6 @@ public class AppAdapter extends BaseAdapter {
         this.appList = appList;
         this.cellHeight = cellHeight;
     }
-
     @Override
     public int getCount() {
         return appList.size();
@@ -48,15 +46,16 @@ public class AppAdapter extends BaseAdapter {
             v = convertView;
         }
 
-        ImageView mImage = v.findViewById(R.id.image);
-        TextView mTextLabel = v.findViewById(R.id.appLabel);
         LinearLayout mLayout = v.findViewById(R.id.layout);
+        ImageView mImage = v.findViewById(R.id.image);
+        TextView mLabel = v.findViewById(R.id.label);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, cellHeight);
-        mLayout.setLayoutParams(layoutParams);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, cellHeight);
+        mLayout.setLayoutParams(lp);
 
         mImage.setImageDrawable(appList.get(position).getImage());
-        mTextLabel.setText(appList.get(position).getName());
+        mLabel.setText(appList.get(position).getName());
+
         mLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

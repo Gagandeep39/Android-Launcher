@@ -10,16 +10,18 @@ import android.widget.GridView;
 
 import java.util.ArrayList;
 
-class ViewPagerAdapter extends PagerAdapter {
+public class ViewPagerAdapter extends PagerAdapter {
+
     Context context;
     ArrayList<PagerObject> pagerAppList;
-    int cellHeight;
+    int cellHeight, numColumn;
     ArrayList<AppAdapter> appAdapterList = new ArrayList<>();
 
-    public ViewPagerAdapter(Context context, ArrayList<PagerObject> pagerAppList, int cellHeight) {
+    public ViewPagerAdapter(Context context, ArrayList<PagerObject> pagerAppList, int cellHeight, int numColumn) {
         this.context = context;
         this.pagerAppList = pagerAppList;
         this.cellHeight = cellHeight;
+        this.numColumn = numColumn;
     }
 
     @NonNull
@@ -27,12 +29,14 @@ class ViewPagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         LayoutInflater inflater = LayoutInflater.from(context);
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.pager_layout, container, false);
-        final GridView mGridView = layout.findViewById(R.id.drawerGrid);
 
+        final GridView mGridView = layout.findViewById(R.id.grid);
+        mGridView.setNumColumns(numColumn);
 
         AppAdapter mGridAdapter = new AppAdapter(context, pagerAppList.get(position).getAppList(), cellHeight);
         mGridView.setAdapter(mGridAdapter);
 
+        appAdapterList.add(mGridAdapter);
 
         container.addView(layout);
         return layout;
@@ -49,12 +53,13 @@ class ViewPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
-        return view == o;
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+        return view == object;
     }
 
-    public void notifyGridChange() {
-        for (int i = 0; i < appAdapterList.size(); i++)
+    public void notifyGridChanged() {
+        for (int i = 0; i < appAdapterList.size(); i++) {
             appAdapterList.get(i).notifyDataSetChanged();
+        }
     }
 }
