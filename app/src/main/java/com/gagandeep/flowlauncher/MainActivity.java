@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
             Intent launchAppIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(app.getPackageName());
             if (launchAppIntent != null)
                 getApplicationContext().startActivity(launchAppIntent);
+
         }
     }
 
